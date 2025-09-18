@@ -3,16 +3,15 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Form Hasil Assessment Level Manager </title>
+  <title>Form Hasil Assessment Level Manager</title>
   <style>
     :root{--accent:#1f6feb;--card:#ffffff;--muted:#666}
-    body{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background:#f4f6fb; margin:20px}
+    body{font-family:Inter, system-ui, Arial; background:#f4f6fb; margin:20px}
     .container{max-width:1000px;margin:0 auto}
     .card{background:var(--card);border-radius:12px;padding:18px;box-shadow:0 6px 18px rgba(20,30,60,0.06)}
-    header{display:flex;gap:18px;align-items:center;margin-bottom:12px}
+    header{display:flex;gap:18px;align-items:flex-start;margin-bottom:12px}
     .logo-frame{width:150px;height:150px;border:2px dashed #d0d7e6;border-radius:8px;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#fff}
     .logo-frame img{width:100%;height:100%;object-fit:cover}
-    .upload-controls{font-size:13px;color:var(--muted)}
     h1{font-size:18px;margin:0}
     form .section{margin-top:14px}
     .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
@@ -29,84 +28,27 @@
     .btn.secondary{background:#6b7280}
     .btn.danger {background: darkred;}
     .btn.primary {background: darkblue;}
-    .tanggal-besar {
-          font-size: 16px;
-          font-weight: 400;
-          padding: 10px 14px;
-          border-radius: 10px;
-          border: 1px solid var(--accent);
-          background: #f9fbff;
-          color: #1f2937;
-          text-align: center;
-        }
-
-    .note-box{
-        display: block;
-        border: 1px dashed rgba(31,111,235,0.25); /* garis putus2 lembut */
-        background: linear-gradient(180deg, rgba(249,251,255,0.9), rgba(243,247,255,0.6));
-        padding: 10px 12px;
-        border-radius: 10px;
-        box-shadow: 0 4px 10px rgba(31,111,235,0.04);
-        color: #0f1724;
-        font-size: 14px;
-        line-height: 1.4;
-        margin-top: 8px;
-        margin-bottom: 12px;
-      }
-
-      .note-box strong{
-        display:inline-block;
-        margin-right:8px;
-        font-weight:700;
-      }
-
-      .checkbox-group {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 6px 12px;
-          margin-top: 5px;
-        }
-
-        .checkbox-group label {
-          display: flex;
-          align-items: center;
-          font-size: 14px;
-          cursor: pointer;
-        }
-
-        .checkbox-group input[type="checkbox"] {
-          margin-right: 6px;
-          accent-color: #2a5298; /* warna centang biru */
-        }
-
-
-    @media print{
-      body{background:white;margin:0}
-      .no-print{display:none}
-      .card{box-shadow:none;border-radius:0;padding:6mm}
-      .logo-frame{border:1px solid #ddd}
-      .note-box{
-        border-style:solid;
-        background: none;
-        box-shadow: none;
-
-      }
-    }
-    @media (max-width:700px){.grid{grid-template-columns:1fr}.rating-row{grid-template-columns:1fr}} 
-    .final-row{display:flex;gap:12px;align-items:center}
-    .final-row label{font-weight:600}
+    .btn.success {background: seagreen;}
+    .tanggal-besar {font-size: 16px;padding: 10px 14px;border-radius: 10px;border: 1px solid var(--accent);background: #f9fbff}
+    .note-box{border: 1px dashed rgba(31,111,235,0.25);background: #f9fbff;padding: 10px 12px;border-radius: 10px;font-size: 14px;margin:8px 0}
+    @media print{.no-print{display:none}.card{box-shadow:none;border-radius:0;padding:6mm}}
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="card">
+    <div class="card" id="formCard">
       <header>
-        <div class="logo-frame" id="photoFrame"> 
-          <span style="color:#99a0b3;text-align:center;padding:8px">Foto Pelamar<br />(klik untuk pilih)</span>
+        <div>
+          <div class="logo-frame" id="photoFrame">
+            <span style="color:#99a0b3;text-align:center;padding:8px">Foto Pelamar<br />(klik untuk pilih)</span>
+          </div>
+          <div style="margin-top:8px">
+            <label>Nama Asesi</label>
+            <input type="text" id="nama_asesi" placeholder="Isi nama asesi" required />
+          </div>
         </div>
         <div style="flex:1">
-          <h1>FORM EVALUASI ASSESSMENT LEVEL MANAGER </h1>
-          <div class="upload-controls">Isi foto dengan klik area foto atau gunakan tombol <strong>"Pilih Foto"</strong>.</div>
+          <h1>FORM EVALUASI ASSESSMENT LEVEL MANAGER</h1>
         </div>
       </header>
 
@@ -118,366 +60,198 @@
           <button type="button" class="btn danger" onclick="clearPhoto()">Hapus Foto</button>
         </div>
 
-       <div class="section"> 
-          <h3>Tanggal Assessment </h3>
+        <!-- tanggal -->
+        <div class="section">
+          <h3>Tanggal Assessment</h3>
           <div class="grid">
             <div>
-              <label>Tanggal Assessment </label>
+              <label>Tanggal Assessment</label>
               <input type="date" id="tanggal_wawancara" class="tanggal-besar" required />
             </div>
             <div>
-              <label>Nama Asesor / penguji </label>
+              <label>Nama Asesor / Penguji</label>
               <input type="text" id="nama_pewawancara" placeholder="Isi nama pewawancara" required />
             </div>
           </div>
         </div>
-        
-        <!-- Data pribadi -->
-        <div class="section">
-          <h3>1. Data Asesi / yang di uji</h3>
-          <div class="grid">
-            <div>
-              <label>Nama Asesi </label>
-              <input type="text" id="nama" placeholder="Nama lengkap" required />
-            </div>
-            <div>
-              <label>Nama COU</label>
-              <input type="text" id="nama_cou" placeholder="Nama COU terkait" />
-            </div>
-            
-            <div>
-              <label>Pendidikan Terakhir</label>
-              <input type="text" id="pendidikan" placeholder="Contoh: S1, D3, SMA" />
-            </div>
-            <div>
-              <label>Jabatan </label>
-              <input type="text" id="jurusan" placeholder="Jabatan" />
-            </div>
-            <div>
-              <label>Masa Kerja </label>
-              <input type="text" id="pengalaman" placeholder="Contoh: 10 tahun  ..." />
-            </div>
 
-            <div class="form-group full">
-              <label>Pernah di posisi:</label>
-              <div class="checkbox-group">
-                <label><input type="checkbox" name="posisi" value="Kasir"> Kasir</label>
-                <label><input type="checkbox" name="posisi" value="Replenishment"> Replenishment</label>
-                <label><input type="checkbox" name="posisi" value="FLM"> FLM</label>
-                <label><input type="checkbox" name="posisi" value="Admin/Scheduler"> Admin/Scheduler</label>
-                <label><input type="checkbox" name="posisi" value="SLM"> SLM</label>
-                <label><input type="checkbox" name="posisi" value="Asmen"> Asmen</label>
-                <label><input type="checkbox" name="posisi" value="Manager"> Manager</label>
-                <label><input type="checkbox" name="posisi" value="Pim Kel"> Pim Kel</label>
-                <label><input type="checkbox" name="posisi" value="Pim Da"> Pim Da</label>
-                <label><input type="checkbox" name="posisi" value="Pim Div"> Pim Div</label>
-              </div>
-            </div>
-        </div>
-
-        <!-- hasil evaluasi personal-->
+        <!-- personal -->
         <div class="section">
-          <h3>2. Hasil Evaluasi Leader Kompetensi Skills ( Pertanyaan Personal ) </h3>
-       <div class="note-box" role="note" aria-live="polite">
-          <strong>Beri nilai :</strong>
-          <span>1 = Sangat kurang, 2 = Kurang, 3 = Cukup, 4 = Baik, 5 = Sangat baik</span>
-        </div>
+          <h3>2. Evaluasi Kompetensi (Personal)</h3>
+          <div class="note-box">1 = Sangat kurang, 5 = Sangat baik</div>
           <div class="grid">
             <div class="rating-row">
-              <div class="label">customer Fokus </div>
-              <div class="controls">
-                <select id="r_komputer">
-                  <option value="" selected>- Pilih -</option>                
-                  <option value="1">1</option>
-                  <option value="2">2</option>
-                  <option value="3">3</option>
-                  <option value="4">4</option>
-                  <option value="5">5</option>
-                </select>
-              </div>
+              <div class="label">Customer Fokus</div>
+              <div class="controls"><select id="personal_customer"><option value="">- Pilih -</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
             </div>
-
             <div class="rating-row">
-              <div class="label">Driving Execution </div>
-              <div class="controls">
-                <select id="r_bahasa">
-                  <option value="" selected>- Pilih -</option>
-                  <option value="1">1</option>
-                  <option value="2">2</option>
-                  <option value="3">3</option>
-                  <option value="4">4</option>
-                  <option value="5">5</option>
-                </select>
-              </div>
+              <div class="label">Driving Execution</div>
+              <div class="controls"><select id="personal_driving"><option value="">- Pilih -</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
             </div>
-
             <div class="rating-row">
-              <div class="label">developing organization capabilities</div>
-              <div class="controls">
-                <select id="r_software">
-                  <option value="" selected>- Pilih -</option>
-                  <option value="1">1</option>
-                  <option value="2">2</option>
-                  <option value="3">3</option>
-                  <option value="4">4</option>
-                  <option value="5">5</option>
-                </select>
-              </div>
+              <div class="label">Developing Org Capabilities</div>
+              <div class="controls"><select id="personal_developing"><option value="">- Pilih -</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
             </div>
-
             <div class="rating-row">
               <div class="label">Managing Diversity</div>
-              <div class="controls">
-                <select id="r_hardware">
-                  <option value="" selected>- Pilih -</option>
-                  <option value="1">1</option>
-                  <option value="2">2</option>
-                  <option value="3">3</option>
-                  <option value="4">4</option>
-                  <option value="5">5</option>
-                </select>
-              </div>
+              <div class="controls"><select id="personal_diversity"><option value="">- Pilih -</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
             </div>
-        </div>
-
-        <!-- hasil evaluasi team -->
-        <div class="section">
-          <h3>3. Hasil Evaluasi Leader Kompetensi Skills ( Pertanyaan Team  )</h3>
-          <div class="grid">
-            <div class="rating-row">
-              <div class="label">customer Fokus </div>
-              <div class="controls">
-                <select id="r_komputer">
-                  <option value="" selected>- Pilih -</option>                
-                  <option value="1">1</option>
-                  <option value="2">2</option>
-                  <option value="3">3</option>
-                  <option value="4">4</option>
-                  <option value="5">5</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="rating-row">
-              <div class="label">Driving Execution </div>
-              <div class="controls">
-                <select id="r_bahasa">
-                  <option value="" selected>- Pilih -</option>
-                  <option value="1">1</option>
-                  <option value="2">2</option>
-                  <option value="3">3</option>
-                  <option value="4">4</option>
-                  <option value="5">5</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="rating-row">
-              <div class="label">developing organization capabilities</div>
-              <div class="controls">
-                <select id="r_software">
-                  <option value="" selected>- Pilih -</option>
-                  <option value="1">1</option>
-                  <option value="2">2</option>
-                  <option value="3">3</option>
-                  <option value="4">4</option>
-                  <option value="5">5</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="rating-row">
-              <div class="label">Managing Diversity</div>
-              <div class="controls">
-                <select id="r_hardware">
-                  <option value="" selected>- Pilih -</option>
-                  <option value="1">1</option>
-                  <option value="2">2</option>
-                  <option value="3">3</option>
-                  <option value="4">4</option>
-                  <option value="5">5</option>
-                </select>
-              </div>
-            </div>
-        </div>
-        </div>
-
-        <!-- wawancara -->
-        <div class="section">
-          <h3>3. Hasil Wawancara </h3>
-          <div class="grid">
-            <div class="rating-row">
-              <div class="label">komunikasi</div>
-              <div class="controls">
-                <select id="r_komputer">
-                  <option value="" selected>- Pilih -</option>                
-                  <option value="1">1</option>
-                  <option value="2">2</option>
-                  <option value="3">3</option>
-                  <option value="4">4</option>
-                  <option value="5">5</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="rating-row">
-              <div class="label">integritas / Etika </div>
-              <div class="controls">
-                <select id="r_bahasa">
-                  <option value="" selected>- Pilih -</option>
-                  <option value="1">1</option>
-                  <option value="2">2</option>
-                  <option value="3">3</option>
-                  <option value="4">4</option>
-                  <option value="5">5</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="rating-row">
-              <div class="label">Adaptif & inisiatif</div>
-              <div class="controls">
-                <select id="r_software">
-                  <option value="" selected>- Pilih -</option>
-                  <option value="1">1</option>
-                  <option value="2">2</option>
-                  <option value="3">3</option>
-                  <option value="4">4</option>
-                  <option value="5">5</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="rating-row">
-              <div class="label">Solid / Team work</div>
-              <div class="controls">
-                <select id="r_hardware">
-                  <option value="" selected>- Pilih -</option>
-                  <option value="1">1</option>
-                  <option value="2">2</option>
-                  <option value="3">3</option>
-                  <option value="4">4</option>
-                  <option value="5">5</option>
-                </select>
-              </div>
-            </div>
-            
-        </div>
-        </div>
-
-
-
-        <div class="section">
-          <h3>Kelebihan asesi </h3>
-          <textarea id="kelebihan" placeholder="Tulis kelebihan..." class="full"></textarea>
-           <h3>Kekurangan asesi  </h3>
-          <textarea id="kekurangan" placeholder="Tulis kekurangan..." class="full" style="margin-top:8px"></textarea>
-        </div>
-
-        
-
-      
-
-        <!-- Catatan Tambahan -->
-        <div class="section" style="text-align:right">
-          <button type="button" class="btn secondary no-print" onclick="toggleCatatan()">Tambah Catatan</button>
-          <div id="catatanBox" style="display:none;margin-top:8px">
-            <label for="catatan_tambahan" style="font-weight:600;display:block;margin-bottom:4px;text-align:left">Catatan Tambahan</label>
-            <textarea id="catatan_tambahan" placeholder="Tulis catatan tambahan di sini..." style="width:100%;min-height:60px"></textarea>
           </div>
         </div>
 
+        <!-- team -->
+        <div class="section">
+          <h3>3. Evaluasi Kompetensi (Team)</h3>
+          <div class="grid">
+            <div class="rating-row">
+              <div class="label">Customer Fokus</div>
+              <div class="controls"><select id="team_customer"><option value="">- Pilih -</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+            </div>
+            <div class="rating-row">
+              <div class="label">Driving Execution</div>
+              <div class="controls"><select id="team_driving"><option value="">- Pilih -</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+            </div>
+            <div class="rating-row">
+              <div class="label">Developing Org Capabilities</div>
+              <div class="controls"><select id="team_developing"><option value="">- Pilih -</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+            </div>
+            <div class="rating-row">
+              <div class="label">Managing Diversity</div>
+              <div class="controls"><select id="team_diversity"><option value="">- Pilih -</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- interview -->
+        <div class="section">
+          <h3>4. Hasil Wawancara</h3>
+          <div class="grid">
+            <div class="rating-row">
+              <div class="label">Komunikasi</div>
+              <div class="controls"><select id="interview_komunikasi"><option value="">- Pilih -</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+            </div>
+            <div class="rating-row">
+              <div class="label">Integritas / Etika</div>
+              <div class="controls"><select id="interview_integritas"><option value="">- Pilih -</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+            </div>
+            <div class="rating-row">
+              <div class="label">Adaptif & Inisiatif</div>
+              <div class="controls"><select id="interview_adaptif"><option value="">- Pilih -</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+            </div>
+            <div class="rating-row">
+              <div class="label">Team Work</div>
+              <div class="controls"><select id="interview_teamwork"><option value="">- Pilih -</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- radar chart -->
+        <div class="section" id="chartSection">
+          <h3>Visualisasi Grafik Radar Kompetensi</h3>
+          <canvas id="radarChart" width="400" height="400"></canvas>
+        </div>
+
+        <!-- catatan -->
+        <div class="section">
+          <h3>Kelebihan</h3>
+          <textarea id="kelebihan" class="full"></textarea>
+          <h3>Kekurangan</h3>
+          <textarea id="kekurangan" class="full"></textarea>
+        </div>
+
         <div class="buttons no-print">
-          <button type="button" class="btn" onclick="previewPrint()">Print / Simpan ke PDF</button>
           <button type="reset" class="btn secondary">Reset Form</button>
+          <button type="button" class="btn success" onclick="downloadPDF()">Export PDF</button>
         </div>
       </form>
-
     </div>
-
-    <p style="margin-top:10px;color:#556">Tips: gunakan fitur Print pada browser -> pilih "Simpan sebagai PDF" untuk menyimpan hasil wawancara sebagai PDF. Tombol Print di atas akan otomatis menyesuaikan tampilan untuk dicetak.</p>
   </div>
 
+  <!-- Chart.js, html2canvas, jsPDF -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
   <script>
-  const photoInput = document.getElementById('photoInput');
-  const photoFrame = document.getElementById('photoFrame');
+    // Foto upload
+    const photoInput = document.getElementById('photoInput');
+    const photoFrame = document.getElementById('photoFrame');
+    photoFrame.addEventListener('click', ()=> photoInput.click());
+    photoInput.addEventListener('change', e=>{
+      const f = e.target.files[0];
+      if(!f) return;
+      const url = URL.createObjectURL(f);
+      photoFrame.innerHTML = '<img src="'+url+'" alt="Foto Pelamar">';
+    });
+    function clearPhoto(){
+      photoInput.value='';
+      photoFrame.innerHTML='<span style="color:#99a0b3">Foto Pelamar<br/>(klik untuk pilih)</span>';
+    }
 
-  photoFrame.addEventListener('click', ()=> document.getElementById('photoInput').click());
-  photoInput.addEventListener('change', e=>{
-    const f = e.target.files && e.target.files[0];
-    if(!f) return;
-    const url = URL.createObjectURL(f);
-    photoFrame.innerHTML = '';
-    const img = document.createElement('img'); 
-    img.src = url; 
-    img.alt = 'Foto Pelamar';
-    photoFrame.appendChild(img);
-  });
-  function clearPhoto(){ 
-    photoInput.value=''; 
-    photoFrame.innerHTML = '<span style="color:#99a0b3;text-align:center;padding:8px">Foto Pelamar<br />(klik untuk pilih)</span>'; 
-  }
+    // Radar Chart
+    const radarLabels = [
+      "Customer Fokus (Personal)",
+      "Driving Execution (Personal)",
+      "Developing Org Cap (Personal)",
+      "Managing Diversity (Personal)",
+      "Customer Fokus (Team)",
+      "Driving Execution (Team)",
+      "Developing Org Cap (Team)",
+      "Managing Diversity (Team)",
+      "Komunikasi",
+      "Integritas / Etika",
+      "Adaptif & Inisiatif",
+      "Team Work"
+    ];
+    const radarSelectIds = [
+      "personal_customer","personal_driving","personal_developing","personal_diversity",
+      "team_customer","team_driving","team_developing","team_diversity",
+      "interview_komunikasi","interview_integritas","interview_adaptif","interview_teamwork"
+    ];
+    function getSelects(){ return radarSelectIds.map(id=>document.getElementById(id)); }
+    const ctx=document.getElementById('radarChart').getContext('2d');
+    const radarChart=new Chart(ctx,{
+      type:'radar',
+      data:{labels:radarLabels,datasets:[{label:'Nilai Assessment',data:new Array(radarLabels.length).fill(0),
+        backgroundColor:'rgba(31,111,235,0.2)',borderColor:'rgba(31,111,235,1)',pointBackgroundColor:'rgba(31,111,235,1)'}]},
+      options:{responsive:true,scales:{r:{min:0,max:5,ticks:{stepSize:1}}}}
+    });
+    function updateRadar(){
+      const values=getSelects().map(sel=>parseInt(sel.value)||0);
+      radarChart.data.datasets[0].data=values; radarChart.update();
+    }
+    getSelects().forEach(sel=> sel.addEventListener('change',updateRadar));
 
-  function toggleCatatan(){
-    const box = document.getElementById('catatanBox');
-    box.style.display = (box.style.display === 'none' || box.style.display === '') ? 'block' : 'none';
-  }
+    // Export PDF → 2 halaman (form & chart)
+    async function downloadPDF(){
+      const { jsPDF } = window.jspdf;
+      const card = document.getElementById("formCard");
+      const chart = document.getElementById("chartSection");
 
-  function previewPrint(){
-    window.onbeforeprint = () => {
-      const card = document.querySelector('.card');
-      const clone = card.cloneNode(true);
+      // Sembunyikan chart saat capture halaman 1
+      chart.style.display = "none";
+      const canvas1 = await html2canvas(card,{scale:2});
+      chart.style.display = "block";
 
-      // ambil semua input dari form asli
-      const original = card.querySelectorAll('input, select, textarea');
-      const cloned = clone.querySelectorAll('input, select, textarea');
+      const pdf = new jsPDF("p","mm","a4");
+      const pageWidth = pdf.internal.pageSize.getWidth();
 
-      original.forEach((el, idx)=>{
-        const span = document.createElement('span');
-        span.style.display='inline-block'; 
-        span.style.minHeight='18px';
+      // Halaman 1 (tanpa chart)
+      const imgData1 = canvas1.toDataURL("image/png");
+      const imgProps1 = pdf.getImageProperties(imgData1);
+      const pdfHeight1 = (imgProps1.height * pageWidth) / imgProps1.width;
+      pdf.addImage(imgData1,"PNG",0,0,pageWidth,pdfHeight1);
 
-        if(el.type === 'checkbox'){
-          // ambil semua checkbox dengan name yang sama
-          let name = el.name;
-          let checkboxes = form.querySelectorAll('input[name="'+name+'"]');
-          let selected = [];
-          checkboxes.forEach(cb=>{
-            let label = cb.parentNode.textContent.trim();
-            if(cb.checked){
-              selected.push("✔ " + label);
-            } else {
-              selected.push("☐ " + label);
-            }
-          });
-          // supaya tidak dobel, hanya tampil sekali di print
-          if(!span.textContent){
-            span.innerHTML = selected.join(" | ");
-          }
-        } else if(el.tagName.toLowerCase()==='select'){
-          span.textContent = el.selectedIndex >= 0 ? el.options[el.selectedIndex].text : '';
-        } else if(el.type==='file'){ 
-          span.textContent=''; 
-        } else { 
-          span.textContent = el.value || ''; 
-        }
+      // Halaman 2 (hanya chart)
+      pdf.addPage();
+      const canvas2 = await html2canvas(chart,{scale:2});
+      const imgData2 = canvas2.toDataURL("image/png");
+      const imgProps2 = pdf.getImageProperties(imgData2);
+      const pdfHeight2 = (imgProps2.height * pageWidth) / imgProps2.width;
+      pdf.addImage(imgData2,"PNG",0,20,pageWidth,pdfHeight2);
 
-        cloned[idx].parentNode.replaceChild(span, cloned[idx]);
-      });
-
-
-      
-
-
-
-
-      document.body.innerHTML=''; 
-      document.body.appendChild(clone);
-    };
-    window.onafterprint = ()=> location.reload();
-    window.print();
-  }
-</script>
-
+      pdf.save("Assessment_Manager.pdf");
+    }
+  </script>
 </body>
 </html>
