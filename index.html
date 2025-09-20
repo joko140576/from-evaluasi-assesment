@@ -1,10 +1,15 @@
-
 <!doctype html>
 <html lang="id">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Form Hasil Assessment Level Manager</title>
+
+  <!-- Chart.js, html2canvas, jsPDF -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
   <style>
     :root{--accent:#1f6feb;--card:#ffffff;--muted:#666}
     body{font-family:Inter, system-ui, Arial; background:#f4f6fb; margin:20px}
@@ -32,6 +37,9 @@
     .btn.success {background: seagreen;}
     .tanggal-besar {font-size: 16px;padding: 10px 14px;border-radius: 10px;border: 1px solid var(--accent);background: #f9fbff}
     .note-box{border: 1px dashed rgba(31,111,235,0.25);background: #f9fbff;padding: 10px 12px;border-radius: 10px;font-size: 14px;margin:8px 0}
+    .total-container {background:#fff9c4;padding:15px;border-radius:6px;border:1px solid #f0e68c;margin-top:10px;font-weight:bold}
+    .final-container {background:#e0f7e9;padding:15px;border-radius:6px;border:1px solid #a5d6a7;margin-top:15px;font-size:18px;font-weight:bold;color:seagreen}
+    #chartSection {margin-top:30px;text-align:center;padding:20px;background:#fff;border-radius:12px;box-shadow:0 6px 18px rgba(20,30,60,0.06)}
     @media print{.no-print{display:none}.card{box-shadow:none;border-radius:0;padding:6mm}}
   </style>
 </head>
@@ -45,7 +53,7 @@
           </div>
           <div style="margin-top:8px">
             <label>Nama Asesi</label>
-            <input type="text" id="nama_asesi" placeholder="Isi nama asesi" required />
+            <input type="text" id="nama_asesi" placeholder="Isi nama asesi" />
           </div>
         </div>
         <div style="flex:1">
@@ -67,115 +75,147 @@
           <div class="grid">
             <div>
               <label>Tanggal Assessment</label>
-              <input type="date" id="tanggal_wawancara" class="tanggal-besar" required />
+              <input type="date" id="tanggal_wawancara" class="tanggal-besar" />
             </div>
             <div>
               <label>Nama Asesor / Penguji</label>
-              <input type="text" id="nama_pewawancara" placeholder="Isi nama pewawancara" required />
+              <input type="text" id="nama_pewawancara" placeholder="Isi nama pewawancara" />
             </div>
           </div>
         </div>
 
-        <!-- team -->
+        <!-- Evaluasi Test -->
         <div class="section">
-          <h3>1. Evaluasi Kompetensi (Team)</h3>
+          <h3>1. Hasil Evaluasi Test </h3>
           <div class="grid">
             <div class="rating-row">
-              <div class="label">Customer Fokus</div>
-              <div class="controls"><select id="team_customer"><option value="">- Pilih -</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+              <div class="label">Test TKD (max 60, bobot 15%)</div>
+              <div class="controls">
+                <input type="number" id="tkd" min="0" max="60" oninput="hitungNilai()">
+              </div>
+              <div id="tkd_hasil" style="font-weight:bold; color:darkblue"></div>
             </div>
             <div class="rating-row">
-              <div class="label">Driving Execution</div>
-              <div class="controls"><select id="team_driving"><option value="">- Pilih -</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+              <div class="label">Test TLMS (max 40, bobot 25%)</div>
+              <div class="controls">
+                <input type="number" id="tlms" min="0" max="40" oninput="hitungNilai()">
+              </div>
+              <div id="tlms_hasil" style="font-weight:bold; color:darkblue"></div>
             </div>
             <div class="rating-row">
-              <div class="label">Developing Org Capabilities</div>
-              <div class="controls"><select id="team_developing"><option value="">- Pilih -</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
-            </div>
-            <div class="rating-row">
-              <div class="label">Managing Diversity</div>
-              <div class="controls"><select id="team_diversity"><option value="">- Pilih -</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+              <div class="label">Test Essay (max 10, bobot 20%)</div>
+              <div class="controls">
+                <input type="number" id="essay" min="0" max="10" oninput="hitungNilai()">
+              </div>
+              <div id="essay_hasil" style="font-weight:bold; color:darkblue"></div>
             </div>
           </div>
+          <div class="total-container">
+            <h3>Total Nilai Terbobot</h3>
+            <div id="total_hasil">Total = 0.00</div>
+          </div>
         </div>
-        <br>
-        <br>
 
-        <!-- personal -->
+        <!-- Evaluasi Wawancara -->
         <div class="section">
-          <h3>2. Evaluasi Kompetensi (Personal)</h3>
+          <h3>2. Evaluasi Wawancara </h3>
           <div class="note-box">1 = Sangat kurang, 5 = Sangat baik</div>
+
+          <h4>2.1. Leadership Competency Skills</h4>
           <div class="grid">
-            <div class="rating-row">
-              <div class="label">Customer Fokus</div>
-              <div class="controls"><select id="personal_customer"><option value="">- Pilih -</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
-            </div>
-            <div class="rating-row">
-              <div class="label">Driving Execution</div>
-              <div class="controls"><select id="personal_driving"><option value="">- Pilih -</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
-            </div>
-            <div class="rating-row">
-              <div class="label">Developing Org Capabilities</div>
-              <div class="controls"><select id="personal_developing"><option value="">- Pilih -</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
-            </div>
-            <div class="rating-row">
-              <div class="label">Managing Diversity</div>
-              <div class="controls"><select id="personal_diversity"><option value="">- Pilih -</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
-            </div>
+            <div class="rating-row"><div class="label">Customer Fokus</div><div class="controls"><select id="personal_customer"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div></div>
+            <div class="rating-row"><div class="label">Driving Execution</div><div class="controls"><select id="personal_driving"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div></div>
+            <div class="rating-row"><div class="label">Developing Org Capabilities</div><div class="controls"><select id="personal_developing"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div></div>
+            <div class="rating-row"><div class="label">Managing Diversity</div><div class="controls"><select id="personal_diversity"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div></div>
           </div>
-          <br>
-          <hr>
-          <br>
+
+          <h4>2.2. Nilai Budaya SIAP</h4>
           <div class="grid">
-            <div class="rating-row">
-              <div class="label">Komunikasi</div>
-              <div class="controls"><select id="interview_komunikasi"><option value="">- Pilih -</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
-            </div>
-            <div class="rating-row">
-              <div class="label">Integritas / Etika</div>
-              <div class="controls"><select id="interview_integritas"><option value="">- Pilih -</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
-            </div>
-            <div class="rating-row">
-              <div class="label">Adaptif & Inisiatif</div>
-              <div class="controls"><select id="interview_adaptif"><option value="">- Pilih -</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
-            </div>
-            <div class="rating-row">
-              <div class="label">Team Work</div>
-              <div class="controls"><select id="interview_teamwork"><option value="">- Pilih -</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
-            </div>
-            <br><br>
-         
+            <div class="rating-row"><div class="label">Solid / Kerja Team</div><div class="controls"><select id="interview_solid"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div></div>
+            <div class="rating-row"><div class="label">Integritas / Moralitas</div><div class="controls"><select id="interview_integritas"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div></div>
+            <div class="rating-row"><div class="label">Adaptif & Inisiatif</div><div class="controls"><select id="interview_adaptif"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div></div>
+            <div class="rating-row"><div class="label">Profesional / Akuntabilitas</div><div class="controls"><select id="interview_teamwork"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div></div>
+          </div>
+
+          <div class="total-container">
+            <h3>Total Nilai Wawancara (Bobot 40%)</h3>
+            <div id="wawancara_hasil">Total = 0.00</div>
+          </div>
         </div>
 
-        <!-- radar chart -->
-        <div class="section" id="chartSection">
-          <h3>Visualisasi Grafik Radar Kompetensi</h3>
-          <canvas id="radarChart" width="400" height="400"></canvas>
-        </div>
-
-        <!-- catatan -->
-        <div class="section">
-          <h3>Kelebihan</h3>
-          <textarea id="kelebihan" class="full"></textarea>
-          <h3>Kekurangan</h3>
-          <textarea id="kekurangan" class="full"></textarea>
-        </div>
-
-        <div class="buttons no-print">
-          <button type="reset" class="btn secondary">Reset Form</button>
-          <button type="button" class="btn success" onclick="downloadPDF()">Export PDF</button>
+        <!-- Total Akhir -->
+        <div class="final-container">
+          <h3>Total Nilai Akhir (max 100)</h3>
+          <div id="final_total">0.00</div>
         </div>
       </form>
+
+      <div class="buttons no-print">
+        <button type="button" class="btn success" onclick="downloadPDF()">Download PDF</button>
+      </div>
+    </div>
+
+    <!-- Chart Section -->
+    <div id="chartSection" class="card">
+      <h3>Grafik Hasil Wawancara</h3>
+      <canvas id="radarChart" width="400" height="400"></canvas>
     </div>
   </div>
 
-  <!-- Chart.js, html2canvas, jsPDF -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
   <script>
-    // Foto upload
+    // --- perhitungan nilai ---
+    let totalTest = 0;
+    let totalWawancara = 0;
+
+    function hitungNilai(){
+      const tkd = parseFloat(document.getElementById("tkd").value) || 0;
+      const tlms = parseFloat(document.getElementById("tlms").value) || 0;
+      const essay = parseFloat(document.getElementById("essay").value) || 0;
+
+      const tkd_bobot = (tkd/60) * 15;
+      const tlms_bobot = (tlms/40) * 25;
+      const essay_bobot = (essay/10) * 20;
+
+      totalTest = tkd_bobot + tlms_bobot + essay_bobot;
+
+      document.getElementById("tkd_hasil").innerText = `Bobot: ${tkd_bobot.toFixed(2)}`;
+      document.getElementById("tlms_hasil").innerText = `Bobot: ${tlms_bobot.toFixed(2)}`;
+      document.getElementById("essay_hasil").innerText = `Bobot: ${essay_bobot.toFixed(2)}`;
+      document.getElementById("total_hasil").innerText = `Total = ${totalTest.toFixed(2)}`;
+
+      hitungFinal();
+    }
+
+    function hitungWawancara() {
+      const ids = [
+        "personal_customer","personal_driving","personal_developing","personal_diversity",
+        "interview_solid","interview_integritas","interview_adaptif","interview_teamwork"
+      ];
+      let sum = 0;
+      ids.forEach(id => { sum += parseInt(document.getElementById(id).value) || 0; });
+
+      totalWawancara = (sum/40) * 40; // bobot 40%
+      document.getElementById("wawancara_hasil").innerText = `Skor = ${sum} | Bobot: ${totalWawancara.toFixed(2)}`;
+
+      hitungFinal();
+    }
+
+    function hitungFinal(){
+      let totalFinal = totalTest + totalWawancara;
+      if(totalFinal > 100) totalFinal = 100;
+      document.getElementById("final_total").innerText = totalFinal.toFixed(2);
+    }
+
+    // pasang event listener untuk select wawancara agar selalu update
+    [
+      "personal_customer","personal_driving","personal_developing","personal_diversity",
+      "interview_solid","interview_integritas","interview_adaptif","interview_teamwork"
+    ].forEach(id=>{
+      const el = document.getElementById(id);
+      if(el) el.addEventListener("change", ()=>{ hitungWawancara(); updateRadar(); });
+    });
+
+    // foto upload
     const photoInput = document.getElementById('photoInput');
     const photoFrame = document.getElementById('photoFrame');
     photoFrame.addEventListener('click', ()=> photoInput.click());
@@ -190,69 +230,116 @@
       photoFrame.innerHTML='<span style="color:#99a0b3">Foto Pelamar<br/>(klik untuk pilih)</span>';
     }
 
-    // Radar Chart
+    // --- radar chart ---
     const radarLabels = [
-      "Customer Fokus (Personal)",
-      "Driving Execution (Personal)",
-      "Developing Org Cap (Personal)",
-      "Managing Diversity (Personal)",
-      "Customer Fokus (Team)",
-      "Driving Execution (Team)",
-      "Developing Org Cap (Team)",
-      "Managing Diversity (Team)",
-      "Komunikasi",
-      "Integritas / Etika",
-      "Adaptif & Inisiatif",
-      "Team Work"
+      "Customer Fokus","Driving Execution","Developing Org Cap","Managing Diversity",
+      "Solid / Teamwork","Integritas","Adaptif","Profesional"
     ];
     const radarSelectIds = [
       "personal_customer","personal_driving","personal_developing","personal_diversity",
-      "team_customer","team_driving","team_developing","team_diversity",
-      "interview_komunikasi","interview_integritas","interview_adaptif","interview_teamwork"
+      "interview_solid","interview_integritas","interview_adaptif","interview_teamwork"
     ];
-    function getSelects(){ return radarSelectIds.map(id=>document.getElementById(id)); }
-    const ctx=document.getElementById('radarChart').getContext('2d');
-    const radarChart=new Chart(ctx,{
-      type:'radar',
-      data:{labels:radarLabels,datasets:[{label:'Nilai Assessment',data:new Array(radarLabels.length).fill(0),
-        backgroundColor:'rgba(31,111,235,0.2)',borderColor:'rgba(31,111,235,1)',pointBackgroundColor:'rgba(31,111,235,1)'}]},
-      options:{responsive:true,scales:{r:{min:0,max:5,ticks:{stepSize:1}}}}
+    const ctx = document.getElementById('radarChart').getContext('2d');
+    const radarChart = new Chart(ctx, {
+      type: 'radar',
+      data: {
+        labels: radarLabels,
+        datasets: [{
+          label: 'Nilai Assessment',
+          data: new Array(radarLabels.length).fill(0),
+          backgroundColor: 'rgba(31,111,235,0.2)',
+          borderColor: 'rgba(31,111,235,1)',
+          pointBackgroundColor: 'rgba(31,111,235,1)'
+        }]
+      },
+      options: { responsive: true, scales: { r: { min: 0, max: 5, ticks: { stepSize: 1 } } } }
     });
+
     function updateRadar(){
-      const values=getSelects().map(sel=>parseInt(sel.value)||0);
-      radarChart.data.datasets[0].data=values; radarChart.update();
+      const values = radarSelectIds.map(id => parseInt(document.getElementById(id).value) || 0);
+      radarChart.data.datasets[0].data = values;
+      radarChart.update();
     }
-    getSelects().forEach(sel=> sel.addEventListener('change',updateRadar));
 
-    // Export PDF → 2 halaman (form & chart)
+    // render awal radar
+    updateRadar();
+
+    // --- improved downloadPDF with slicing to avoid cut-off ---
     async function downloadPDF(){
-      const { jsPDF } = window.jspdf;
-      const card = document.getElementById("formCard");
-      const chart = document.getElementById("chartSection");
+      try{
+        const { jsPDF } = window.jspdf;
+        const card = document.getElementById("formCard");
+        const chart = document.getElementById("chartSection");
 
-      // Sembunyikan chart saat capture halaman 1
-      chart.style.display = "none";
-      const canvas1 = await html2canvas(card,{scale:2});
-      chart.style.display = "block";
+        // --- capture form card as canvas ---
+        const canvas1 = await html2canvas(card, { scale: 2, useCORS: true, logging:false });
+        const imgData1 = canvas1.toDataURL('image/png');
 
-      const pdf = new jsPDF("p","mm","a4");
-      const pageWidth = pdf.internal.pageSize.getWidth();
+        const pdf = new jsPDF('p','mm','a4');
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
+        const margin = 10; // mm top/bottom margin if wanted
+        const usablePageHeight = pageHeight - margin*2;
 
-      // Halaman 1 (tanpa chart)
-      const imgData1 = canvas1.toDataURL("image/png");
-      const imgProps1 = pdf.getImageProperties(imgData1);
-      const pdfHeight1 = (imgProps1.height * pageWidth) / imgProps1.width;
-      pdf.addImage(imgData1,"PNG",0,0,pageWidth,pdfHeight1);
+        // scaled height of full canvas when width set to pageWidth
+        const img1ScaledHeight = (canvas1.height * pageWidth) / canvas1.width;
 
-      // Halaman 2 (hanya chart)
-      pdf.addPage();
-      const canvas2 = await html2canvas(chart,{scale:2});
-      const imgData2 = canvas2.toDataURL("image/png");
-      const imgProps2 = pdf.getImageProperties(imgData2);
-      const pdfHeight2 = (imgProps2.height * pageWidth) / imgProps2.width;
-      pdf.addImage(imgData2,"PNG",0,20,pageWidth,pdfHeight2);
+        if (img1ScaledHeight <= usablePageHeight) {
+          // fits in one page
+          pdf.addImage(imgData1, 'PNG', 0, margin, pageWidth, img1ScaledHeight);
+        } else {
+          // slice canvas into multiple parts
+          const pxPerPage = Math.floor((usablePageHeight * canvas1.width) / pageWidth);
+          let remaining = canvas1.height;
+          let position = 0;
+          while (remaining > 0) {
+            const sliceHeight = Math.min(pxPerPage, remaining);
+            const canvasSlice = document.createElement('canvas');
+            canvasSlice.width = canvas1.width;
+            canvasSlice.height = sliceHeight;
+            const ctxSlice = canvasSlice.getContext('2d');
+            ctxSlice.drawImage(canvas1, 0, position, canvas1.width, sliceHeight, 0, 0, canvasSlice.width, canvasSlice.height);
+            const sliceData = canvasSlice.toDataURL('image/png');
+            const slicePdfHeight = (sliceHeight * pageWidth) / canvas1.width;
+            pdf.addImage(sliceData, 'PNG', 0, margin, pageWidth, slicePdfHeight);
+            remaining -= sliceHeight;
+            position += sliceHeight;
+            if (remaining > 0) pdf.addPage();
+          }
+        }
 
-      pdf.save("Assessment_Manager.pdf");
+        // --- capture chart (as second PDF page) ---
+        pdf.addPage();
+        const canvas2 = await html2canvas(chart, { scale: 2, useCORS: true, logging:false });
+        const img2Data = canvas2.toDataURL('image/png');
+        const img2ScaledHeight = (canvas2.height * pageWidth) / canvas2.width;
+        if (img2ScaledHeight <= usablePageHeight) {
+          pdf.addImage(img2Data, 'PNG', 0, margin, pageWidth, img2ScaledHeight);
+        } else {
+          // slice chart canvas
+          const pxPerPage2 = Math.floor((usablePageHeight * canvas2.width) / pageWidth);
+          let rem2 = canvas2.height;
+          let pos2 = 0;
+          while (rem2 > 0) {
+            const sliceH = Math.min(pxPerPage2, rem2);
+            const c = document.createElement('canvas');
+            c.width = canvas2.width;
+            c.height = sliceH;
+            c.getContext('2d').drawImage(canvas2, 0, pos2, canvas2.width, sliceH, 0, 0, c.width, c.height);
+            const d = c.toDataURL('image/png');
+            const pdfH = (sliceH * pageWidth) / canvas2.width;
+            pdf.addImage(d, 'PNG', 0, margin, pageWidth, pdfH);
+            rem2 -= sliceH;
+            pos2 += sliceH;
+            if (rem2 > 0) pdf.addPage();
+          }
+        }
+
+        pdf.save('Assessment_Manager.pdf');
+      } catch (err) {
+        console.error('Download PDF gagal:', err);
+        alert('Gagal membuat PDF. Lihat console untuk detil.');
+      }
     }
   </script>
 </body>
