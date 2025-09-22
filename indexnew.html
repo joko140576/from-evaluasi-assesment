@@ -1,0 +1,388 @@
+
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Form Hasil Assessment Level Manager</title>
+
+  <!-- Chart.js, html2canvas, jsPDF -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <style>
+    :root{--accent:#1f6feb;--card:#ffffff;--muted:#666}
+    body{font-family:Inter, system-ui, Arial; background:#f4f6fb; margin:20px}
+    .container{max-width:1000px;margin:0 auto}
+    .card{background:var(--card);border-radius:12px;padding:18px;box-shadow:0 6px 18px rgba(20,30,60,0.06)}
+    header{display:flex;gap:18px;align-items:flex-start;margin-bottom:12px}
+    .logo-frame{width:150px;height:150px;border:2px dashed #d0d7e6;border-radius:8px;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#fff}
+    .logo-frame img{width:100%;height:100%;object-fit:cover}
+    h1{font-size:18px;margin:0}
+    form .section{margin-top:14px}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    label{display:block;font-weight:600;margin-bottom:6px;font-size:13px}
+    input[type=text], textarea, select{width:100%;padding:8px;border-radius:8px;border:1px solid #d7dee9;font-size:14px}
+    textarea{min-height:80px;resize:vertical}
+    .rating-row{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;align-items:center}
+    .rating-row .label{grid-column:1/span 1;font-weight:600;font-size:13px}
+    .rating-row .controls{grid-column:2/span 5;display:flex;gap:6px}
+    .rating-row select{flex:1;max-width:160px}
+    .full{grid-column:1/span 2}
+    .buttons{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+    .btn{padding:10px 14px;border-radius:8px;border:0;background:var(--accent);color:white;cursor:pointer}
+    .btn.secondary{background:#6b7280}
+    .btn.danger {background: darkred;}
+    .btn.primary {background: darkblue;}
+    .btn.success {background: seagreen;}
+    .tanggal-besar {font-size: 16px;padding: 10px 14px;border-radius: 10px;border: 1px solid var(--accent);background: #f9fbff}
+    .note-box{border: 1px dashed rgba(31,111,235,0.25);background: #f9fbff;padding: 10px 12px;border-radius: 10px;font-size: 14px;margin:8px 0}
+    .total-container {background:#fff9c4;padding:5px;border-radius:6px;border:1px solid #f0e68c;margin-top:5px;font-weight:bold}
+    .final-container {background:#e0f7e9;padding:5px;border-radius:6px;border:1px solid #a5d6a7;margin-top:5px;font-size:12px;font-weight:bold;color:seagreen}
+    #chartSection {margin-top:30px;text-align:center;padding:20px;background:#fff;border-radius:12px;box-shadow:0 6px 18px rgba(20,30,60,0.06)}
+    @media print{.no-print{display:none}.card{box-shadow:none;border-radius:0;padding:6mm}}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card" id="formCard">
+      <header>
+        <div>
+          <div class="logo-frame" id="photoFrame">
+            <span style="color:#99a0b3;text-align:center;padding:8px">Foto Pelamar<br />(klik untuk pilih)</span>
+          </div>
+          <div style="margin-top:8px">
+            <label>Nama Asesi</label>
+            <input type="text" id="nama_asesi" placeholder="Isi nama asesi" />
+          </div>
+        </div>
+        <div style="flex:1">
+          <h1>FORM EVALUASI ASSESSMENT LEVEL MANAGER</h1>
+        </div>
+      </header>
+
+      <form id="formInterview">
+        <!-- upload -->
+        <div style="display:flex;gap:8px;margin-bottom:12px" class="no-print">
+          <input type="file" id="photoInput" accept="image/*" style="display:none" />
+          <button type="button" class="btn primary" onclick="document.getElementById('photoInput').click()">Pilih Foto</button>
+          <button type="button" class="btn danger" onclick="clearPhoto()">Hapus Foto</button>
+        </div>
+
+        <!-- tanggal -->
+        <div class="section">
+          <h3>Tanggal Assessment</h3>
+          <div class="grid">
+            <div>
+              <label>Tanggal Assessment</label>
+              <input type="date" id="tanggal_wawancara" class="tanggal-besar" />
+            </div>
+            <div>
+              <label>Nama Asesor / Penguji</label>
+              <input type="text" id="nama_pewawancara" placeholder="Isi nama pewawancara" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Evaluasi Test -->
+        <div class="section">
+          <h3>1. Hasil Evaluasi Test </h3>
+          <div class="grid">
+            <div class="rating-row">
+              <div class="label">Test TKD (max 60, bobot 15%)</div>
+              <div class="controls">
+                <input type="number" id="tkd" min="0" max="60" oninput="hitungNilai()">
+              </div>
+              <div id="tkd_hasil" style="font-weight:bold; color:darkblue"></div>
+            </div>
+            <div class="rating-row">
+              <div class="label">Test TLMS (max 40, bobot 25%)</div>
+              <div class="controls">
+                <input type="number" id="tlms" min="0" max="40" oninput="hitungNilai()">
+              </div>
+              <div id="tlms_hasil" style="font-weight:bold; color:darkblue"></div>
+            </div>
+            <div class="rating-row">
+              <div class="label">Test Essay (max 10, bobot 20%)</div>
+              <div class="controls">
+                <input type="number" id="essay" min="0" max="10" oninput="hitungNilai()">
+              </div>
+              <div id="essay_hasil" style="font-weight:bold; color:darkblue"></div>
+            </div>
+          </div>
+          <div class="total-container">
+            <h3>Total Nilai Terbobot</h3>
+            <div id="total_hasil">Total = 0.00</div>
+          </div>
+        </div>
+
+        <!-- Evaluasi Wawancara -->
+        <div class="section">
+          <h3>2. Evaluasi Wawancara </h3>
+          <div class="note-box">1 = Sangat kurang, 5 = Sangat baik</div>
+
+          <h4>2.1. Leadership Competency Skills</h4>
+          <div class="grid">
+            <div class="rating-row"><div class="label">Customer Fokus</div><div class="controls"><select id="personal_customer"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div></div>
+            <div class="rating-row"><div class="label">Driving Execution</div><div class="controls"><select id="personal_driving"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div></div>
+            <div class="rating-row"><div class="label">Developing Org Capabilities</div><div class="controls"><select id="personal_developing"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div></div>
+            <div class="rating-row"><div class="label">Managing Diversity</div><div class="controls"><select id="personal_diversity"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div></div>
+          </div>
+
+          <h4>2.2. Nilai Budaya SIAP</h4>
+          <div class="grid">
+            <div class="rating-row"><div class="label">Solid / Kerja Team</div><div class="controls"><select id="interview_solid"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div></div>
+            <div class="rating-row"><div class="label">Integritas / Moralitas</div><div class="controls"><select id="interview_integritas"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div></div>
+            <div class="rating-row"><div class="label">Adaptif & Inisiatif</div><div class="controls"><select id="interview_adaptif"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div></div>
+            <div class="rating-row"><div class="label">Profesional / Akuntabilitas</div><div class="controls"><select id="interview_teamwork"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div></div>
+          </div>
+
+          <div class="total-container">
+            <h3>Total Nilai Wawancara (Bobot 40%)</h3>
+            <div id="wawancara_hasil">Total = 0.00</div>
+          </div>
+        </div>
+
+        <div class="final-container">
+          <h3>Total Nilai Akhir (max 100)</h3>
+          <div id="final_total">0.00</div>
+          <div id="final_category" style="margin-top:4px; font-size:14px; color:darkblue"></div>
+        </div>
+      </form>
+
+      <div class="buttons no-print">
+        <button type="button" class="btn success" onclick="downloadPDF()">Download PDF</button>
+      </div>
+    </div>
+
+    <!-- Chart Section -->
+    <div id="chartSection" class="card">
+      <h3>Grafik Hasil Wawancara</h3>
+      <canvas id="radarChart" width="400" height="400"></canvas>
+    </div>
+  </div>
+
+  <script>
+    // --- perhitungan nilai ---
+    let totalTest = 0;
+    let totalWawancara = 0;
+
+    function hitungNilai(){
+      const tkd = parseFloat(document.getElementById("tkd").value) || 0;
+      const tlms = parseFloat(document.getElementById("tlms").value) || 0;
+      const essay = parseFloat(document.getElementById("essay").value) || 0;
+
+      const tkd_bobot = (tkd/60) * 15;
+      const tlms_bobot = (tlms/40) * 25;
+      const essay_bobot = (essay/10) * 20;
+
+      totalTest = tkd_bobot + tlms_bobot + essay_bobot;
+
+      document.getElementById("tkd_hasil").innerText = `Bobot: ${tkd_bobot.toFixed(2)}`;
+      document.getElementById("tlms_hasil").innerText = `Bobot: ${tlms_bobot.toFixed(2)}`;
+      document.getElementById("essay_hasil").innerText = `Bobot: ${essay_bobot.toFixed(2)}`;
+      document.getElementById("total_hasil").innerText = `Total = ${totalTest.toFixed(2)}`;
+
+      hitungFinal();
+    }
+
+    function hitungWawancara() {
+      const ids = [
+        "personal_customer","personal_driving","personal_developing","personal_diversity",
+        "interview_solid","interview_integritas","interview_adaptif","interview_teamwork"
+      ];
+      let sum = 0;
+      ids.forEach(id => { sum += parseInt(document.getElementById(id).value) || 0; });
+
+      totalWawancara = (sum/40) * 40; // bobot 40%
+      document.getElementById("wawancara_hasil").innerText = `Skor = ${sum} | Bobot: ${totalWawancara.toFixed(2)}`;
+
+      hitungFinal();
+    }
+
+
+    function hitungWawancara() {
+      const ids = [
+        "personal_customer","personal_driving","personal_developing","personal_diversity",
+        "interview_solid","interview_integritas","interview_adaptif","interview_teamwork"
+      ];
+      let sum = 0;
+      ids.forEach(id => { sum += parseInt(document.getElementById(id).value) || 0; });
+
+      totalWawancara = (sum/40) * 40; // bobot 40%
+      document.getElementById("wawancara_hasil").innerText = `Skor = ${sum} | Bobot: ${totalWawancara.toFixed(2)}`;
+
+      hitungFinal();
+    }
+
+    function hitungFinal(){
+      let totalFinal = totalTest + totalWawancara;
+      if(totalFinal > 100) totalFinal = 100;
+      document.getElementById("final_total").innerText = totalFinal.toFixed(2);
+
+      let kategori = "";
+      if(totalFinal >= 80) {
+        kategori = "Outstanding → paling tinggi, di atas ekspektasi";
+      } else if(totalFinal >= 70) {
+        kategori = "Strong Performer → sangat baik, konsisten";
+      } else if(totalFinal >= 60) {
+        kategori = "Proficient → cukup baik, memenuhi ekspektasi";
+      } else if(totalFinal >= 50) {
+        kategori = "Developing → masih perlu peningkatan";
+      } else {
+        kategori = "Needs Improvement → di bawah ekspektasi";
+      }
+
+      document.getElementById("final_category").innerText = kategori;
+    }
+
+
+
+    // pasang event listener untuk select wawancara agar selalu update
+    [
+      "personal_customer","personal_driving","personal_developing","personal_diversity",
+      "interview_solid","interview_integritas","interview_adaptif","interview_teamwork"
+    ].forEach(id=>{
+      const el = document.getElementById(id);
+      if(el) el.addEventListener("change", ()=>{ hitungWawancara(); updateRadar(); });
+    });
+
+    // pasang event listener untuk select wawancara agar selalu update
+    [
+      "personal_customer","personal_driving","personal_developing","personal_diversity",
+      "interview_solid","interview_integritas","interview_adaptif","interview_teamwork"
+    ].forEach(id=>{
+      const el = document.getElementById(id);
+      if(el) el.addEventListener("change", ()=>{ hitungWawancara(); updateRadar(); });
+    });
+
+    // foto upload
+    const photoInput = document.getElementById('photoInput');
+    const photoFrame = document.getElementById('photoFrame');
+    photoFrame.addEventListener('click', ()=> photoInput.click());
+    photoInput.addEventListener('change', e=>{
+      const f = e.target.files[0];
+      if(!f) return;
+      const url = URL.createObjectURL(f);
+      photoFrame.innerHTML = '<img src="'+url+'" alt="Foto Pelamar">';
+    });
+    function clearPhoto(){
+      photoInput.value='';
+      photoFrame.innerHTML='<span style="color:#99a0b3">Foto Pelamar<br/>(klik untuk pilih)</span>';
+    }
+
+    // --- radar chart ---
+    const radarLabels = [
+      "Customer Fokus","Driving Execution","Developing Org Cap","Managing Diversity",
+      "Solid / Teamwork","Integritas","Adaptif","Profesional"
+    ];
+    const radarSelectIds = [
+      "personal_customer","personal_driving","personal_developing","personal_diversity",
+      "interview_solid","interview_integritas","interview_adaptif","interview_teamwork"
+    ];
+    const ctx = document.getElementById('radarChart').getContext('2d');
+    const radarChart = new Chart(ctx, {
+      type: 'radar',
+      data: {
+        labels: radarLabels,
+        datasets: [{
+          label: 'Nilai Assessment',
+          data: new Array(radarLabels.length).fill(0),
+          backgroundColor: 'rgba(31,111,235,0.2)',
+          borderColor: 'rgba(31,111,235,1)',
+          pointBackgroundColor: 'rgba(31,111,235,1)'
+        }]
+      },
+      options: { responsive: true, scales: { r: { min: 0, max: 5, ticks: { stepSize: 1 } } } }
+    });
+
+    function updateRadar(){
+      const values = radarSelectIds.map(id => parseInt(document.getElementById(id).value) || 0);
+      radarChart.data.datasets[0].data = values;
+      radarChart.update();
+    }
+
+    // render awal radar
+    updateRadar();
+
+    // --- improved downloadPDF with slicing to avoid cut-off ---
+    async function downloadPDF(){
+      try{
+        const { jsPDF } = window.jspdf;
+        const card = document.getElementById("formCard");
+        const chart = document.getElementById("chartSection");
+
+        // --- capture form card as canvas ---
+        const canvas1 = await html2canvas(card, { scale: 2, useCORS: true, logging:false });
+        const imgData1 = canvas1.toDataURL('image/png');
+
+        const pdf = new jsPDF('p','mm','a4');
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
+        const margin = 10; // mm top/bottom margin if wanted
+        const usablePageHeight = pageHeight - margin*2;
+
+        // scaled height of full canvas when width set to pageWidth
+        const img1ScaledHeight = (canvas1.height * pageWidth) / canvas1.width;
+
+        if (img1ScaledHeight <= usablePageHeight) {
+          // fits in one page
+          pdf.addImage(imgData1, 'PNG', 0, margin, pageWidth, img1ScaledHeight);
+        } else {
+          // slice canvas into multiple parts
+          const pxPerPage = Math.floor((usablePageHeight * canvas1.width) / pageWidth);
+          let remaining = canvas1.height;
+          let position = 0;
+          while (remaining > 0) {
+            const sliceHeight = Math.min(pxPerPage, remaining);
+            const canvasSlice = document.createElement('canvas');
+            canvasSlice.width = canvas1.width;
+            canvasSlice.height = sliceHeight;
+            const ctxSlice = canvasSlice.getContext('2d');
+            ctxSlice.drawImage(canvas1, 0, position, canvas1.width, sliceHeight, 0, 0, canvasSlice.width, canvasSlice.height);
+            const sliceData = canvasSlice.toDataURL('image/png');
+            const slicePdfHeight = (sliceHeight * pageWidth) / canvas1.width;
+            pdf.addImage(sliceData, 'PNG', 0, margin, pageWidth, slicePdfHeight);
+            remaining -= sliceHeight;
+            position += sliceHeight;
+            if (remaining > 0) pdf.addPage();
+          }
+        }
+
+        // --- capture chart (as second PDF page) ---
+        pdf.addPage();
+        const canvas2 = await html2canvas(chart, { scale: 2, useCORS: true, logging:false });
+        const img2Data = canvas2.toDataURL('image/png');
+        const img2ScaledHeight = (canvas2.height * pageWidth) / canvas2.width;
+        if (img2ScaledHeight <= usablePageHeight) {
+          pdf.addImage(img2Data, 'PNG', 0, margin, pageWidth, img2ScaledHeight);
+        } else {
+          // slice chart canvas
+          const pxPerPage2 = Math.floor((usablePageHeight * canvas2.width) / pageWidth);
+          let rem2 = canvas2.height;
+          let pos2 = 0;
+          while (rem2 > 0) {
+            const sliceH = Math.min(pxPerPage2, rem2);
+            const c = document.createElement('canvas');
+            c.width = canvas2.width;
+            c.height = sliceH;
+            c.getContext('2d').drawImage(canvas2, 0, pos2, canvas2.width, sliceH, 0, 0, c.width, c.height);
+            const d = c.toDataURL('image/png');
+            const pdfH = (sliceH * pageWidth) / canvas2.width;
+            pdf.addImage(d, 'PNG', 0, margin, pageWidth, pdfH);
+            rem2 -= sliceH;
+            pos2 += sliceH;
+            if (rem2 > 0) pdf.addPage();
+          }
+        }
+
+        pdf.save('Assessment_Manager.pdf');
+      } catch (err) {
+        console.error('Download PDF gagal:', err);
+        alert('Gagal membuat PDF. Lihat console untuk detil.');
+      }
+    }
+  </script>
+</body>
+</html>
