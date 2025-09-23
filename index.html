@@ -1,4 +1,5 @@
 
+
 <!doctype html>
 <html lang="id">
 <head>
@@ -15,7 +16,7 @@
     :root{--accent:#1f6feb;--card:#ffffff;--muted:#666}
     body{font-family:Inter, system-ui, Arial; background:#f4f6fb; margin:20px}
     .container{max-width:1000px;margin:0 auto}
-    .card{background:var(--card);border-radius:12px;padding:18px;box-shadow:0 6px 18px rgba(20,30,60,0.06)}
+    .card{background:var(--card);border-radius:12px;padding:45px;box-shadow:0 6px 18px rgba(20,30,60,0.06)}
     header{display:flex;gap:18px;align-items:flex-start;margin-bottom:12px}
     .logo-frame{width:150px;height:150px;border:2px dashed #d0d7e6;border-radius:8px;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#fff}
     .logo-frame img{width:100%;height:100%;object-fit:cover}
@@ -39,9 +40,25 @@
     .tanggal-besar {font-size: 16px;padding: 10px 14px;border-radius: 10px;border: 1px solid var(--accent);background: #f9fbff}
     .note-box{border: 1px dashed rgba(31,111,235,0.25);background: #f9fbff;padding: 10px 12px;border-radius: 10px;font-size: 14px;margin:8px 0}
     .total-container {background:#fff9c4;padding:5px;border-radius:6px;border:1px solid #f0e68c;margin-top:5px;font-weight:bold}
-    .final-container {background:#e0f7e9;padding:5px;border-radius:6px;border:1px solid #a5d6a7;margin-top:5px;font-size:12px;font-weight:bold;color:seagreen}
+    .final-container {
+          background:#e0f7e9;
+          padding:10px;
+          border-radius:8px;
+          border:1px solid #a5d6a7;
+          margin-top:20px; /* <-- ganti dari 200px */
+          font-size:16px;
+          font-weight:bold;
+          color:seagreen
+        }
     #chartSection {margin-top:30px;text-align:center;padding:20px;background:#fff;border-radius:12px;box-shadow:0 6px 18px rgba(20,30,60,0.06)}
-    @media print{.no-print{display:none}.card{box-shadow:none;border-radius:0;padding:6mm}}
+    @media print {
+    .no-print { display:none }
+    body { margin:0; background:white }
+    .container { max-width:100% }
+    .card { box-shadow:none; border-radius:0; padding:10mm }
+    .final-container { margin-top:20px !important }
+    #chartSection { page-break-before: always; margin-top:20px }
+  }
   </style>
 </head>
 <body>
@@ -54,7 +71,7 @@
           </div>
           <div style="margin-top:8px">
             <label>Nama Asesi</label>
-            <input type="text" id="nama_asesi" placeholder="Isi nama asesi" />
+            <input type="text" id="nama_asesi" placeholder="Isi nama asesi" style="height: 25px;width: 350px;" />
           </div>
         </div>
         <div style="flex:1">
@@ -80,38 +97,38 @@
             </div>
             <div>
               <label>Nama Asesor / Penguji</label>
-              <input type="text" id="nama_pewawancara" placeholder="Isi nama pewawancara" />
+              <input type="text" id="nama_pewawancara" placeholder="Isi nama pewawancara" style="height: 25px;"  />
             </div>
           </div>
         </div>
 
         <!-- Evaluasi Test -->
-        <div class="section">
+        <div class="section"  style="margin-top:25px">
           <h3>1. Hasil Evaluasi Test </h3>
           <div class="grid">
             <div class="rating-row">
               <div class="label">Test TKD (max 60, bobot 15%)</div>
               <div class="controls">
-                <input type="number" id="tkd" min="0" max="60" oninput="hitungNilai()">
+                <input type="number" id="tkd" min="0" max="60" oninput="hitungNilai()" style="height: 25px;border-radius:10px;width: 100px;border: 1px solid gray;">
               </div>
               <div id="tkd_hasil" style="font-weight:bold; color:darkblue"></div>
             </div>
             <div class="rating-row">
               <div class="label">Test TLMS (max 40, bobot 25%)</div>
               <div class="controls">
-                <input type="number" id="tlms" min="0" max="40" oninput="hitungNilai()">
+                <input type="number" id="tlms" min="0" max="40" oninput="hitungNilai()" style="height: 25px;border-radius:10px;width: 100px;border: 1px solid gray">
               </div>
               <div id="tlms_hasil" style="font-weight:bold; color:darkblue"></div>
             </div>
             <div class="rating-row">
               <div class="label">Test Essay (max 10, bobot 20%)</div>
               <div class="controls">
-                <input type="number" id="essay" min="0" max="10" oninput="hitungNilai()">
+                <input type="number" id="essay" min="0" max="10" oninput="hitungNilai()" style="height: 25px;border-radius:10px;width: 100px;border: 1px solid gray">
               </div>
               <div id="essay_hasil" style="font-weight:bold; color:darkblue"></div>
             </div>
           </div>
-          <div class="total-container">
+          <div class="total-container" style="margin-top:20px;margin-bottom:50px;">
             <h3>Total Nilai Terbobot</h3>
             <div id="total_hasil">Total = 0.00</div>
           </div>
@@ -138,17 +155,21 @@
             <div class="rating-row"><div class="label">Profesional / Akuntabilitas</div><div class="controls"><select id="interview_teamwork"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div></div>
           </div>
 
-          <div class="total-container">
+          <div class="total-container" style="margin-top:40px;margin-bottom:50px">
             <h3>Total Nilai Wawancara (Bobot 40%)</h3>
             <div id="wawancara_hasil">Total = 0.00</div>
           </div>
         </div>
-
-        <div class="final-container">
+          <br><br>
+        <h1 style="text-align: center;margin-top: 50px;">FORM EVALUASI ASSESSMENT LEVEL MANAGER</h1>
+          <br>
+        <div class="final-container" style="margin-top: 20px;">
           <h3>Total Nilai Akhir (max 100)</h3>
+          <div id="final_name" style="margin-bottom:6px; font-size:24px; color:darkblue"></div>
           <div id="final_total">0.00</div>
-          <div id="final_category" style="margin-top:4px; font-size:14px; color:darkblue"></div>
+          <div id="final_category" style="margin-top:4px; font-size:20px; color:darkred"></div>
         </div>
+
       </form>
 
       <div class="buttons no-print">
@@ -219,7 +240,14 @@
     function hitungFinal(){
       let totalFinal = totalTest + totalWawancara;
       if(totalFinal > 100) totalFinal = 100;
-      document.getElementById("final_total").innerText = totalFinal.toFixed(2);
+
+      // ambil nama asesi
+      const namaAsesi = document.getElementById("nama_asesi").value.trim();
+
+      // tampilkan nama asesi
+      document.getElementById("final_name").innerText = namaAsesi ? `Nama Asesi: ${namaAsesi}` : "";
+
+      document.getElementById("final_total").innerText = `Total Nilai: ${totalFinal.toFixed(2)}`;
 
       let kategori = "";
       if(totalFinal >= 80) {
@@ -234,9 +262,8 @@
         kategori = "Needs Improvement → di bawah ekspektasi";
       }
 
-      document.getElementById("final_category").innerText = kategori;
-    }
-
+  document.getElementById("final_category").innerText = kategori;
+}
 
 
     // pasang event listener untuk select wawancara agar selalu update
